@@ -1,0 +1,37 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual env
+venv/
+.venv/
+env/
+
+# Environment files
+.env
+.env.*
+
+# Local DB files
+data.db
+*.sqlite
+*.sqlite3
+
+# Local secrets (don't commit credentials)
+auth.py
+
+# Rust build artifacts
+**/target/
+rust_engine/target/
+
+# Do NOT ignore Cargo.lock for application repos — keep it committed for reproducible builds
+# If you maintain rust_engine as a library crate and prefer not to commit Cargo.lock, remove the comment above
+# and uncomment the following line to ignore Cargo.lock:
+# Cargo.lock
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
