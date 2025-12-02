@@ -1,32 +1,68 @@
+#############################
 # Python artifacts
+#############################
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 
-# Virtual env
+#############################
+# Virtual environments
+#############################
 venv/
 .venv/
 env/
+*/venv/
+*/.venv/
 
-# Environment files
+#############################
+# Environment variables
+#############################
 .env
 .env.*
+*.env
 
-# Local DB files
-data.db
+#############################
+# Databases
+#############################
+*.db
 *.sqlite
 *.sqlite3
 
-# Local secrets (don't commit credentials)
-/auth.py
+#############################
+# Secrets / Config (SENSITIVE)
+#############################
+auth.py
+config/*.json
+secrets/
 
+#############################
 # Rust build artifacts
+#############################
+target/
 **/target/
-/rust_engine/target/
+rust_engine/target/
+*.lock
 
-# IDE / OS files
+#############################
+# Build artifacts / Cache
+#############################
+dist/
+build/
+cache/
+
+#############################
+# Logs
+#############################
+*.log
+logs/
+logs/*.log
+
+#############################
+# OS / Editor files
+#############################
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+*.swp
