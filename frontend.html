@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNILAG Price Saver API - Test Frontend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .card h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .card label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+        .card input, .card select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e8f4f8;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #c3e6cb;
+            color: #155724;
+        }
+        .loading {
+            display: none;
+            color: #667eea;
+        }
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+        .status {
+            text-align: center;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .status.ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 UNILAG Price Saver API</h1>
+            <p>Test Frontend for Backend Endpoints</p>
+        </header>
+
+        <div id="status" class="status" style="display: none;"></div>
+
+        <div class="content">
+            <!-- Items Section -->
+            <div class="card">
+                <h2>📦 Items</h2>
+                <button onclick="testItems()">Get All Items</button>
+                <div id="itemsResponse" class="response" style="display: none;"></div>
+
+                <label>Item Name:</label>
+                <input type="text" id="itemName" placeholder="e.g., Rice">
+                <label>Category:</label>
+                <input type="text" id="itemCategory" placeholder="e.g., Staples">
+                <button onclick="createItem()">Create Item</button>
+                <div id="createItemResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Prices Section -->
+            <div class="card">
+                <h2>💰 Prices</h2>
+                <button onclick="testPrices()">Get All Prices</button>
+                <div id="pricesResponse" class="response" style="display: none;"></div>
+
+                <label>Item ID:</label>
+                <input type="number" id="priceItemId" placeholder="e.g., 1">
+                <label>Location:</label>
+                <input type="text" id="priceLocation" placeholder="e.g., Yaba">
+                <label>Amount:</label>
+                <input type="number" id="priceAmount" placeholder="e.g., 500" step="0.01">
+                <button onclick="createPrice()">Add Price</button>
+                <div id="createPriceResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- ML Section -->
+            <div class="card">
+                <h2>🤖 Machine Learning</h2>
+                <label>Item Name:</label>
+                <input type="text" id="mlItem" placeholder="e.g., Rice">
+                <label>Location:</label>
+                <input type="text" id="mlLocation" placeholder="e.g., Yaba">
+                <button onclick="predictPrice()">Predict Price</button>
+                <div id="predictResponse" class="response" style="display: none;"></div>
+
+                <button onclick="generateHeatmap()">Generate Heatmap</button>
+                <div id="heatmapResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Payments Section -->
+            <div class="card">
+                <h2>💳 Payments</h2>
+                <label>Amount:</label>
+                <input type="number" id="paymentAmount" placeholder="e.g., 1000" step="0.01">
+                <label>Description:</label>
+                <input type="text" id="paymentDescription" placeholder="e.g., Buy Rice">
+                <button onclick="createPaymentLink()">Generate Payment Link</button>
+                <div id="paymentResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- API Info Section -->
+            <div class="card">
+                <h2>ℹ️ API Status</h2>
+                <button onclick="checkStatus()">Check Backend Status</button>
+                <div id="statusResponse" class="response" style="display: none;"></div>
+                <p style="margin-top: 20px; color: #666; font-size: 0.9em;">
+                    <strong>Backend URL:</strong> <span id="apiUrl">http://localhost:8000</span>
+                </p>
+                <label>Custom API URL:</label>
+                <input type="text" id="customUrl" placeholder="e.g., http://localhost:8000">
+                <button onclick="setCustomUrl()">Update URL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let API_URL = localStorage.getItem('apiUrl') || 'http://localhost:8000';
+        document.getElementById('apiUrl').textContent = API_URL;
+        document.getElementById('customUrl').value = API_URL;
+
+        function setCustomUrl() {
+            const url = document.getElementById('customUrl').value.trim();
+            if (url) {
+                API_URL = url;
+                localStorage.setItem('apiUrl', url);
+                document.getElementById('apiUrl').textContent = API_URL;
+                showStatus('API URL updated to: ' + API_URL, 'ok');
+            }
+        }
+
+        function showStatus(message, type = 'ok') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = 'status ' + type;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function displayResponse(elementId, data, isError = false) {
+            const el = document.getElementById(elementId);
+            el.textContent = JSON.stringify(data, null, 2);
+            el.className = 'response ' + (isError ? 'error' : 'success');
+            el.style.display = 'block';
+        }
+
+        function handleError(elementId, error) {
+            displayResponse(elementId, { error: error.message || String(error) }, true);
+        }
+
+        async function checkStatus() {
+            try {
+                const res = await fetch(API_URL + '/');
+                const data = await res.json();
+                displayResponse('statusResponse', { status: res.status, data });
+            } catch (e) {
+                handleError('statusResponse', e);
+            }
+        }
+
+        async function testItems() {
+            try {
+                const res = await fetch(API_URL + '/items');
+                const data = await res.json();
+                displayResponse('itemsResponse', data);
+            } catch (e) {
+                handleError('itemsResponse', e);
+            }
+        }
+
+        async function createItem() {
+            const name = document.getElementById('itemName').value;
+            const category = document.getElementById('itemCategory').value;
+            if (!name || !category) {
+                showStatus('Please fill in all fields', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(API_URL + '/items', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, category })
+                });
+                const data = await res.json();
+                displayResponse('createItemResponse', data, !res.ok);
+            } catch (e) {
+                handleError('createItemResponse', e);
+            }
+        }
+
+        async function testPrices() {
+            try {
+                const res = await fetch(API_URL + '/prices');
+                const data = await res.json();
+                displayResponse('pricesResponse', data);
+            } catch (e) {
+                handleError('pricesResponse', e);
+            }
+        }
+
+        async function createPrice() {
+            const item_id = parseInt(document.getElementById('priceItemId').value);
+            const location = document.getElementById('priceLocation').value;
+            const amount = parseFloat(document.getElementById('priceAmount').value);
+            if (!item_id || !location || !amount) {
+                showStatus('Please fill in all fields', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(API_URL + '/prices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ item_id, location, amount })
+                });
+                const data = await res.json();
+                displayResponse('createPriceResponse', data, !res.ok);
+            } catch (e) {
+                handleError('createPriceResponse', e);
+            }
+        }
+
+        async function predictPrice() {
+            const item = document.getElementById('mlItem').value;
+            const location = document.getElementById('mlLocation').value;
+            if (!item || !location) {
+                showStatus('Please fill in all fields', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(API_URL + `/ml/predict?item=${encodeURIComponent(item)}&location=${encodeURIComponent(location)}`);
+                const data = await res.json();
+                displayResponse('predictResponse', data);
+            } catch (e) {
+                handleError('predictResponse', e);
+            }
+        }
+
+        async function generateHeatmap() {
+            try {
+                const res = await fetch(API_URL + '/ml/heatmap');
+                const data = await res.json();
+                displayResponse('heatmapResponse', data);
+            } catch (e) {
+                handleError('heatmapResponse', e);
+            }
+        }
+
+        async function createPaymentLink() {
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const description = document.getElementById('paymentDescription').value;
+            if (!amount || !description) {
+                showStatus('Please fill in all fields', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(API_URL + '/payments/pay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, description })
+                });
+                const data = await res.json();
+                displayResponse('paymentResponse', data, !res.ok);
+            } catch (e) {
+                handleError('paymentResponse', e);
+            }
+        }
+
+        // Auto-check status on load
+        window.addEventListener('load', checkStatus);
+    </script>
+</body>
+</html>

@@ -67,3 +67,6 @@ class SearchResponse(BaseModel):
     cheapest: Optional[CheapestLocation]
     top5: List[CheapestLocation]
     heatmap_path: Optional[str]
+
+# Alias for backwards compatibility
+PendingPriceResponse = PendingPriceOut
