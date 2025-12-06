@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNILAG Price Saver - Multi-Page App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        .nav button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: #f8f9fa;
+            color: #333;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin: 0;
+            min-width: 120px;
+        }
+        .nav button:hover { background: #e9ecef; }
+        .nav button.active {
+            background: white;
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .page { display: none; padding: 30px; min-height: 400px; }
+        .page.active { display: block; }
+        .content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .card h3 { font-size: 1.2em; margin-bottom: 15px; color: #333; }
+        .card label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+        .card input, .card select, .card textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        button.action {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            width: 100%;
+        }
+        button.action:hover { background: #764ba2; }
+        .response {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e8f4f8;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: none;
+        }
+        .response.error {
+            background: #f8d7da;
+            border-left-color: #f5c6cb;
+            color: #721c24;
+        }
+        .response.success {
+            background: #d4edda;
+            border-left-color: #c3e6cb;
+            color: #155724;
+        }
+        .status {
+            text-align: center;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            display: none;
+        }
+        .status.ok { background: #d4edda; color: #155724; display: block; }
+        .status.error { background: #f8d7da; color: #721c24; display: block; }
+        @media (max-width: 768px) {
+            .content { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 UNILAG Price Saver</h1>
+            <p>Multi-Page Test Frontend for API</p>
+        </header>
+
+        <div class="nav">
+            <button class="nav-btn active" onclick="switchPage('dashboard', event)">📊 Dashboard</button>
+            <button class="nav-btn" onclick="switchPage('items', event)">📦 Items</button>
+            <button class="nav-btn" onclick="switchPage('prices', event)">💰 Prices</button>
+            <button class="nav-btn" onclick="switchPage('ml', event)">🤖 ML</button>
+            <button class="nav-btn" onclick="switchPage('payments', event)">💳 Payments</button>
+            <button class="nav-btn" onclick="switchPage('pending', event)">⏳ Pending</button>
+            <button class="nav-btn" onclick="switchPage('settings', event)">⚙️ Settings</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="page active">
+            <div id="dashboardStatus" class="status"></div>
+            <div class="content">
+                <div class="card">
+                    <h3>🔗 API Status</h3>
+                    <button class="action" onclick="AppPages.dashboard.checkStatus()">Check Connection</button>
+                    <div id="dashboardResponse" class="response"></div>
+                </div>
+                <div class="card">
+                    <h3>📈 Statistics</h3>
+                    <button class="action" onclick="AppPages.dashboard.getStats()">Load Stats</button>
+                    <div id="statsResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Page -->
+        <div id="items" class="page">
+            <div id="itemsStatus" class="status"></div>
+            <div class="content">
+                <div class="card">
+                    <h3>📦 All Items</h3>
+                    <button class="action" onclick="AppPages.items.list()">Load Items</button>
+                    <div id="itemsListResponse" class="response"></div>
+                </div>
+                <div class="card">
+                    <h3>➕ Create Item</h3>
+                    <label>Item Name:</label>
+                    <input type="text" id="itemName" placeholder="e.g., Rice">
+                    <label>Category:</label>
+                    <input type="text" id="itemCategory" placeholder="e.g., Staples">
+                    <button class="action" onclick="AppPages.items.create()">Create</button>
+                    <div id="itemsCreateResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prices Page -->
+        <div id="prices" class="page">
+            <div id="pricesStatus" class="status"></div>
+            <div class="content">
+                <div class="card">
+                    <h3>💰 All Prices</h3>
+                    <button class="action" onclick="AppPages.prices.list()">Load Prices</button>
+                    <div id="pricesListResponse" class="response"></div>
+                </div>
+                <div class="card">
+                    <h3>➕ Add Price</h3>
+                    <label>Item ID:</label>
+                    <input type="number" id="priceItemId" placeholder="1">
+                    <label>Location:</label>
+                    <input type="text" id="priceLocation" placeholder="e.g., Yaba">
+                    <label>Amount:</label>
+                    <input type="number" id="priceAmount" placeholder="500" step="0.01">
+                    <button class="action" onclick="AppPages.prices.create()">Add</button>
+                    <div id="pricesCreateResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Page -->
+        <div id="ml" class="page">
+            <div id="mlStatus" class="status"></div>
+            <div class="content">
+                <div class="card">
+                    <h3>📊 Price Prediction</h3>
+                    <label>Item Name:</label>
+                    <input type="text" id="mlItem" placeholder="e.g., Rice">
+                    <label>Location:</label>
+                    <input type="text" id="mlLocation" placeholder="e.g., Yaba">
+                    <button class="action" onclick="AppPages.ml.predict()">Predict</button>
+                    <div id="mlPredictResponse" class="response"></div>
+                </div>
+                <div class="card">
+                    <h3>🗺️ Heatmap</h3>
+                    <button class="action" onclick="AppPages.ml.heatmap()">Generate</button>
+                    <div id="mlHeatmapResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Page -->
+        <div id="payments" class="page">
+            <div id="paymentsStatus" class="status"></div>
+            <div class="content">
+                <div class="card">
+                    <h3>💳 Create Payment Link</h3>
+                    <label>Amount:</label>
+                    <input type="number" id="paymentAmount" placeholder="1000" step="0.01">
+                    <label>Description:</label>
+                    <input type="text" id="paymentDescription" placeholder="e.g., Buy Rice">
+                    <button class="action" onclick="AppPages.payments.create()">Generate</button>
+                    <div id="paymentsCreateResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Page -->
+        <div id="pending" class="page">
+            <div id="pendingStatus" class="status"></div>
+            <div class="content">
+                <div class="card">
+                    <h3>⏳ Pending Prices</h3>
+                    <button class="action" onclick="AppPages.pending.list()">Load</button>
+                    <div id="pendingListResponse" class="response"></div>
+                </div>
+                <div class="card">
+                    <h3>➕ Submit Pending</h3>
+                    <label>Item Name:</label>
+                    <input type="text" id="pendingItem" placeholder="e.g., Rice">
+                    <label>Price:</label>
+                    <input type="number" id="pendingPrice" placeholder="500" step="0.01">
+                    <label>Location:</label>
+                    <input type="text" id="pendingLocation" placeholder="e.g., Yaba">
+                    <button class="action" onclick="AppPages.pending.create()">Submit</button>
+                    <div id="pendingCreateResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings" class="page">
+            <div class="content">
+                <div class="card">
+                    <h3>⚙️ API Configuration</h3>
+                    <label>Backend URL:</label>
+                    <input type="text" id="customUrl" placeholder="http://localhost:8000">
+                    <button class="action" onclick="AppPages.settings.updateUrl()">Update</button>
+                    <p id="currentApiUrl" style="margin-top:15px;color:#666;font-size:0.9em;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let API_URL = localStorage.getItem('apiUrl') || 'http://localhost:8000';
+
+        function switchPage(pageName, e) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageName).classList.add('active');
+            if (e) e.target.classList.add('active');
+        }
+
+        function showStatus(pageId, msg, type = 'ok') {
+            const el = document.getElementById(pageId + 'Status');
+            el.textContent = msg;
+            el.className = 'status ' + type;
+            setTimeout(() => el.className = 'status', 3000);
+        }
+
+        function displayResponse(id, data, isError = false) {
+            const el = document.getElementById(id);
+            el.textContent = JSON.stringify(data, null, 2);
+            el.className = 'response ' + (isError ? 'error' : 'success');
+            el.style.display = 'block';
+        }
+
+        const AppPages = {
+            dashboard: {
+                checkStatus: async () => {
+                    try {
+                        const r = await fetch(API_URL + '/');
+                        const d = await r.json();
+                        displayResponse('dashboardResponse', d);
+                    } catch (e) {
+                        displayResponse('dashboardResponse', { error: e.message }, true);
+                    }
+                },
+                getStats: async () => {
+                    try {
+                        const items = await fetch(API_URL + '/items').then(r => r.json());
+                        const prices = await fetch(API_URL + '/prices').then(r => r.json());
+                        displayResponse('statsResponse', { items: Array.isArray(items) ? items.length : 0, prices: Array.isArray(prices) ? prices.length : 0 });
+                    } catch (e) {
+                        displayResponse('statsResponse', { error: e.message }, true);
+                    }
+                }
+            },
+            items: {
+                list: async () => {
+                    try {
+                        const r = await fetch(API_URL + '/items');
+                        const d = await r.json();
+                        displayResponse('itemsListResponse', d);
+                    } catch (e) {
+                        displayResponse('itemsListResponse', { error: e.message }, true);
+                    }
+                },
+                create: async () => {
+                    const name = document.getElementById('itemName').value;
+                    const category = document.getElementById('itemCategory').value;
+                    if (!name || !category) return showStatus('items', 'Fill all fields', 'error');
+                    try {
+                        const r = await fetch(API_URL + '/items', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, category }) });
+                        const d = await r.json();
+                        displayResponse('itemsCreateResponse', d, !r.ok);
+                    } catch (e) {
+                        displayResponse('itemsCreateResponse', { error: e.message }, true);
+                    }
+                }
+            },
+            prices: {
+                list: async () => {
+                    try {
+                        const r = await fetch(API_URL + '/prices');
+                        const d = await r.json();
+                        displayResponse('pricesListResponse', d);
+                    } catch (e) {
+                        displayResponse('pricesListResponse', { error: e.message }, true);
+                    }
+                },
+                create: async () => {
+                    const item_id = parseInt(document.getElementById('priceItemId').value);
+                    const location = document.getElementById('priceLocation').value;
+                    const amount = parseFloat(document.getElementById('priceAmount').value);
+                    if (!item_id || !location || !amount) return showStatus('prices', 'Fill all fields', 'error');
+                    try {
+                        const r = await fetch(API_URL + '/prices', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ item_id, location, amount }) });
+                        const d = await r.json();
+                        displayResponse('pricesCreateResponse', d, !r.ok);
+                    } catch (e) {
+                        displayResponse('pricesCreateResponse', { error: e.message }, true);
+                    }
+                }
+            },
+            ml: {
+                predict: async () => {
+                    const item = document.getElementById('mlItem').value;
+                    const location = document.getElementById('mlLocation').value;
+                    if (!item || !location) return showStatus('ml', 'Fill all fields', 'error');
+                    try {
+                        const r = await fetch(API_URL + `/ml/predict?item=${encodeURIComponent(item)}&location=${encodeURIComponent(location)}`);
+                        const d = await r.json();
+                        displayResponse('mlPredictResponse', d);
+                    } catch (e) {
+                        displayResponse('mlPredictResponse', { error: e.message }, true);
+                    }
+                },
+                heatmap: async () => {
+                    try {
+                        const r = await fetch(API_URL + '/ml/heatmap');
+                        const d = await r.json();
+                        displayResponse('mlHeatmapResponse', d);
+                    } catch (e) {
+                        displayResponse('mlHeatmapResponse', { error: e.message }, true);
+                    }
+                }
+            },
+            payments: {
+                create: async () => {
+                    const amount = parseFloat(document.getElementById('paymentAmount').value);
+                    const description = document.getElementById('paymentDescription').value;
+                    if (!amount || !description) return showStatus('payments', 'Fill all fields', 'error');
+                    try {
+                        const r = await fetch(API_URL + '/payments/pay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount, description }) });
+                        const d = await r.json();
+                        displayResponse('paymentsCreateResponse', d, !r.ok);
+                    } catch (e) {
+                        displayResponse('paymentsCreateResponse', { error: e.message }, true);
+                    }
+                }
+            },
+            pending: {
+                list: async () => {
+                    try {
+                        const r = await fetch(API_URL + '/pending');
+                        const d = await r.json();
+                        displayResponse('pendingListResponse', d);
+                    } catch (e) {
+                        displayResponse('pendingListResponse', { error: e.message }, true);
+                    }
+                },
+                create: async () => {
+                    const item = document.getElementById('pendingItem').value;
+                    const parsed_price = parseFloat(document.getElementById('pendingPrice').value) || null;
+                    const location_text = document.getElementById('pendingLocation').value;
+                    if (!item) return showStatus('pending', 'Fill item name', 'error');
+                    try {
+                        const r = await fetch(API_URL + '/pending', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ item, parsed_price, location_text }) });
+                        const d = await r.json();
+                        displayResponse('pendingCreateResponse', d, !r.ok);
+                    } catch (e) {
+                        displayResponse('pendingCreateResponse', { error: e.message }, true);
+                    }
+                }
+            },
+            settings: {
+                updateUrl: () => {
+                    const url = document.getElementById('customUrl').value.trim();
+                    if (url) {
+                        API_URL = url;
+                        localStorage.setItem('apiUrl', url);
+                        document.getElementById('currentApiUrl').textContent = 'Current API URL: ' + API_URL;
+                        showStatus('settings', 'URL updated!', 'ok');
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('load', () => {
+            document.getElementById('customUrl').value = API_URL;
+            document.getElementById('currentApiUrl').textContent = 'Current API URL: ' + API_URL;
+            AppPages.dashboard.checkStatus();
+        });
+    </script>
+</body>
+</html>
