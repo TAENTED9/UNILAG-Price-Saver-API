@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNILAG Price Saver - Dashboard</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1234567890&libraries=places" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --danger: #FF3B30;
+            --success: #34C759;
+            --warning: #FF9500;
+            --light: #F2F2F7;
+            --dark: #000;
+            --text: #000;
+            --bg: #fff;
+            --border: #E5E5EA;
+        }
+
+        body.dark-mode {
+            --text: #fff;
+            --bg: #1C1C1E;
+            --border: #38383A;
+            --light: #2C2C2E;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .dark-mode-toggle {
+            position: relative;
+            top: auto;
+            right: auto;
+            z-index: 101;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
+        }
+
+        .dark-mode-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Navigation Panel */
+        .nav-toggle {
+            position: relative;
+            top: auto;
+            left: auto;
+            z-index: 101;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
+        }
+
+        .nav-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .nav-panel {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--light);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .nav-panel.open {
+            left: 0;
+        }
+
+        .nav-panel h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 998;
+        }
+
+        .nav-overlay.open {
+            display: block;
+        }
+
+        /* Remove fixed positioning from buttons - make them scroll with page */
+        @media (max-width: 1024px) {
+            .nav-toggle,
+            .dark-mode-toggle {
+                position: static;
+                margin: 1rem;
+                display: inline-flex;
+            }
+
+            header {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Main content */
+        .container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .sidebar h2 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        label .required {
+            color: var(--danger);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: #0051D5;
+            transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background: #888;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Filters Section */
+        .filters {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .filters h3 {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Prices Table */
+        .prices-section {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .prices-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .prices-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .prices-table th {
+            background: var(--border);
+            padding: 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+
+        .prices-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prices-table tbody tr:hover {
+            background: var(--border);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .price-value {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .prices-table {
+                font-size: 0.8rem;
+            }
+
+            .prices-table th, .prices-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        .success-message {
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Location Picker Modal */
+        .location-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .location-modal.open {
+            display: flex;
+        }
+
+        .location-modal-content {
+            background: var(--bg);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .location-modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .location-modal-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .location-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .location-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .location-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .location-input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .location-input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .location-input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .autocomplete-list {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .autocomplete-list.open {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .autocomplete-item-main {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .autocomplete-item-secondary {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.2rem;
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        .location-coordinates {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .location-coordinates.show {
+            display: block;
+        }
+
+        .location-coordinates p {
+            margin: 0.3rem 0;
+            color: var(--text);
+        }
+
+        .location-modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .location-modal-footer button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .location-modal-footer .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .location-modal-footer .btn-primary:hover {
+            background: #0051D5;
+        }
+
+        .location-modal-footer .btn-secondary {
+            background: #888;
+            color: white;
+        }
+
+        .location-modal-footer .btn-secondary:hover {
+            background: #666;
+        }
+
+        .location-info {
+            background: #e3f2fd;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #01579b;
+        }
+
+        body.dark-mode .location-info {
+            background: rgba(33, 150, 243, 0.1);
+            color: #90caf9;
+        }
+    </style>
+
+</head>
+<body>
+    <header>
+        <button class="nav-toggle" id="navToggleBtn" title="Navigation">☰</button>
+        <div class="logo">🛒 UNILAG Price Saver</div>
+        <div class="header-actions">
+            <span id="user-info">User: Student</span>
+            <button class="dark-mode-toggle" id="darkModeBtn" title="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <div class="nav-overlay" id="navOverlay"></div>
+    <div class="nav-panel" id="navPanel">
+        <h3>📱 Navigation</h3>
+        <a href="user-dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="admin-dashboard.html" class="nav-item">👨‍💼 Admin</a>
+        <a href="#" onclick="logout()" class="nav-item">🚪 Logout</a>
+    </div>
+
+    <!-- Location Picker Modal -->
+    <div class="location-modal" id="locationModal">
+        <div class="location-modal-content">
+            <div class="location-modal-header">
+                <h3>📍 Pick Location</h3>
+                <button class="location-modal-close" id="locationModalClose">&times;</button>
+            </div>
+            <div class="location-modal-body">
+                <div class="location-info">
+                    💡 Click on the map to select a location or search for a place below
+                </div>
+
+                <div class="location-input-group">
+                    <label for="locationSearch">Search Location</label>
+                    <input type="text" id="locationSearch" placeholder="e.g., UNILAG, Shoprite Ikeja, Lekki">
+                    <div class="autocomplete-list" id="autocompleteList"></div>
+                </div>
+
+                <div id="map"></div>
+
+                <div class="location-coordinates" id="locationCoordinates">
+                    <p><strong>Selected Location:</strong></p>
+                    <p id="selectedAddress">-</p>
+                    <p>Latitude: <span id="selectedLat">-</span></p>
+                    <p>Longitude: <span id="selectedLng">-</span></p>
+                </div>
+
+                <div class="location-input-group">
+                    <label for="manualLocation">Or Enter Location Manually</label>
+                    <input type="text" id="manualLocation" placeholder="e.g., Main Campus, Federal College Road">
+                </div>
+            </div>
+            <div class="location-modal-footer">
+                <button class="btn-secondary" id="locationModalCancel">Cancel</button>
+                <button class="btn-primary" id="locationModalConfirm">Confirm Location</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar: Add Price Form -->
+        <aside class="sidebar">
+            <h2>Submit Price</h2>
+            <div class="success-message" id="successMsg">✅ Price submitted successfully!</div>
+            
+            <div class="form-section">
+                <form id="priceForm">
+                    <div class="form-group">
+                        <label for="category">
+                            Category <span class="required">*</span>
+                        </label>
+                        <select id="category" required>
+                            <option value="">Select category...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemName">
+                            Item Name <span class="required">*</span>
+                        </label>
+                        <input type="text" id="itemName" placeholder="e.g., Rice, Peak Milk" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brand">Brand</label>
+                        <input type="text" id="brand" placeholder="e.g., Peak, Farmer's Choice">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packSize">Pack Size</label>
+                        <input type="text" id="packSize" placeholder="e.g., 500, 1000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packUnit">Pack Unit</label>
+                        <select id="packUnit">
+                            <option value="">Select unit...</option>
+                            <option value="g">Grams (g)</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="ml">Milliliters (ml)</option>
+                            <option value="L">Liters (L)</option>
+                            <option value="pcs">Pieces (pcs)</option>
+                            <option value="pack">Pack</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">
+                            Price (₦) <span class="required">*</span>
+                        </label>
+                        <input type="number" id="price" step="0.01" placeholder="Enter price" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pricePerUnit">Price Per Unit (₦)</label>
+                        <input type="number" id="pricePerUnit" step="0.01" placeholder="Calculated per 100g/ml">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="retailer">Retailer</label>
+                        <input type="text" id="retailer" placeholder="Store/Shop name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="location" placeholder="Area/Campus location" style="flex: 1;">
+                            <button type="button" id="mapPickerBtn" style="width: auto; padding: 0.6rem 1rem; background: var(--success); color: white;" title="Pick location from map">📍</button>
+                        </div>
+                    </div>
+
+                    <button type="submit">Submit Price</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Stats -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h4>Total Prices</h4>
+                    <div class="number" id="totalPrices">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Average Price</h4>
+                    <div class="number" id="avgPrice">₦0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Locations</h4>
+                    <div class="number" id="totalLocations">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Retailers</h4>
+                    <div class="number" id="totalRetailers">0</div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <h3>🔍 Filters</h3>
+                <div class="filter-grid">
+                    <div>
+                        <label for="filterCategory">Category</label>
+                        <select id="filterCategory">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterMinPrice">Min Price (₦)</label>
+                        <input type="number" id="filterMinPrice" placeholder="0" step="0.01">
+                    </div>
+                    <div>
+                        <label for="filterMaxPrice">Max Price (₦)</label>
+                        <input type="number" id="filterMaxPrice" placeholder="999999" step="0.01">
+                    </div>
+                    <div>
+                        <label for="filterRetailer">Retailer</label>
+                        <input type="text" id="filterRetailer" placeholder="Search retailer...">
+                    </div>
+                    <div>
+                        <label for="filterLocation">Location</label>
+                        <input type="text" id="filterLocation" placeholder="Search location...">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="secondary" onclick="resetFilters()">Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prices Table -->
+            <div class="prices-section">
+                <h3>📊 Current Prices</h3>
+                <div id="pricesContainer">
+                    <div class="empty-state">
+                        <p>No prices available yet. Start by submitting a price above!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+        let allPrices = [];
+        let allCategories = [];
+        let selectedLocation = null;
+        let map = null;
+        let mapMarker = null;
+
+        // ===== LOCATION PICKER FUNCTIONALITY =====
+
+        // Initialize location picker modal
+        const locationModal = document.getElementById('locationModal');
+        const locationModalClose = document.getElementById('locationModalClose');
+        const locationModalCancel = document.getElementById('locationModalCancel');
+        const locationModalConfirm = document.getElementById('locationModalConfirm');
+        const mapPickerBtn = document.getElementById('mapPickerBtn');
+        const locationSearch = document.getElementById('locationSearch');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const manualLocation = document.getElementById('manualLocation');
+
+        // Open location picker
+        mapPickerBtn.addEventListener('click', () => {
+            locationModal.classList.add('open');
+            setTimeout(() => {
+                if (!map) {
+                    initMap();
+                }
+            }, 300);
+        });
+
+        // Close location picker
+        locationModalClose.addEventListener('click', () => locationModal.classList.remove('open'));
+        locationModalCancel.addEventListener('click', () => locationModal.classList.remove('open'));
+
+        // Initialize Google Map
+        function initMap() {
+            const defaultLocation = { lat: 6.5244, lng: 3.3792 }; // UNILAG coordinates
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
+                center: defaultLocation,
+                mapTypeControl: true,
+                fullscreenControl: true,
+                zoomControl: true,
+            });
+
+            // Add click listener to map
+            map.addListener('click', (e) => {
+                const lat = e.latLng.lat();
+                const lng = e.latLng.lng();
+                setSelectedLocation(lat, lng);
+            });
+        }
+
+        // Set selected location and reverse geocode
+        async function setSelectedLocation(lat, lng) {
+            selectedLocation = { lat, lng };
+
+            // Update or create marker
+            if (mapMarker) {
+                mapMarker.setPosition({ lat, lng });
+            } else {
+                mapMarker = new google.maps.Marker({
+                    position: { lat, lng },
+                    map: map,
+                    title: 'Selected Location'
+                });
+            }
+
+            // Center map on marker
+            map.setCenter({ lat, lng });
+
+            // Try to reverse geocode
+            try {
+                const response = await fetch(`${API_URL}/maps/reverse-geocode?latitude=${lat}&longitude=${lng}`);
+                const data = await response.json();
+
+                if (data.success && data.location) {
+                    selectedLocation.address = data.location.address;
+                    displayLocationCoordinates(data.location.address, lat, lng);
+                } else {
+                    displayLocationCoordinates(`Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`, lat, lng);
+                }
+            } catch (error) {
+                console.error('Reverse geocoding error:', error);
+                displayLocationCoordinates(`Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`, lat, lng);
+            }
+        }
+
+        // Display location coordinates
+        function displayLocationCoordinates(address, lat, lng) {
+            const coordsDiv = document.getElementById('locationCoordinates');
+            document.getElementById('selectedAddress').textContent = address;
+            document.getElementById('selectedLat').textContent = lat.toFixed(6);
+            document.getElementById('selectedLng').textContent = lng.toFixed(6);
+            coordsDiv.classList.add('show');
+        }
+
+        // Location search with autocomplete
+        let autocompleteTimeout;
+        locationSearch.addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+
+            clearTimeout(autocompleteTimeout);
+            autocompleteList.classList.remove('open');
+
+            if (query.length < 2) {
+                autocompleteList.innerHTML = '';
+                return;
+            }
+
+            autocompleteTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/maps/search/autocomplete?input_text=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+
+                    if (data.success && data.predictions.length > 0) {
+                        autocompleteList.innerHTML = data.predictions.map((pred, idx) => `
+                            <div class="autocomplete-item" onclick="selectAutocompletePlace('${pred.place_id}', '${pred.description.replace(/'/g, "\\'")}')">
+                                <div class="autocomplete-item-main">${pred.main_text}</div>
+                                ${pred.secondary_text ? `<div class="autocomplete-item-secondary">${pred.secondary_text}</div>` : ''}
+                            </div>
+                        `).join('');
+                        autocompleteList.classList.add('open');
+                    } else {
+                        autocompleteList.innerHTML = '<div class="autocomplete-item" style="cursor: default;">No results found</div>';
+                        autocompleteList.classList.add('open');
+                    }
+                } catch (error) {
+                    console.error('Autocomplete error:', error);
+                    autocompleteList.classList.remove('open');
+                }
+            }, 300);
+        });
+
+        // Select place from autocomplete
+        window.selectAutocompletePlace = async (placeId, description) => {
+            try {
+                const response = await fetch(`${API_URL}/maps/place/${placeId}`);
+                const data = await response.json();
+
+                if (data.success && data.place) {
+                    setSelectedLocation(data.place.latitude, data.place.longitude);
+                    locationSearch.value = data.place.address;
+                    autocompleteList.classList.remove('open');
+                }
+            } catch (error) {
+                console.error('Place details error:', error);
+            }
+        };
+
+        // Confirm location selection
+        locationModalConfirm.addEventListener('click', () => {
+            let finalLocation = '';
+
+            if (manualLocation.value.trim()) {
+                finalLocation = manualLocation.value.trim();
+            } else if (selectedLocation && selectedLocation.address) {
+                finalLocation = selectedLocation.address;
+            } else if (selectedLocation) {
+                finalLocation = `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`;
+            }
+
+            if (finalLocation) {
+                document.getElementById('location').value = finalLocation;
+                locationModal.classList.remove('open');
+                manualLocation.value = '';
+                autocompleteList.innerHTML = '';
+            } else {
+                alert('Please select a location or enter it manually');
+            }
+        });
+
+        // ===== ORIGINAL NAVIGATION & DASHBOARD FUNCTIONALITY =====
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const navPanel = document.getElementById('navPanel');
+        const navOverlay = document.getElementById('navOverlay');
+
+        navToggleBtn.addEventListener('click', () => {
+            navPanel.classList.toggle('open');
+            navOverlay.classList.toggle('open');
+        });
+
+        navOverlay.addEventListener('click', () => {
+            navPanel.classList.remove('open');
+            navOverlay.classList.remove('open');
+        });
+
+        // Dark Mode Toggle
+        const darkModeBtn = document.getElementById('darkModeBtn');
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            darkModeBtn.textContent = isDark ? '☀️' : '🌙';
+        });
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            darkModeBtn.textContent = '☀️';
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/items/categories/all`);
+                const categories = await response.json();
+                allCategories = categories;
+
+                const categorySelect = document.getElementById('category');
+                const filterSelect = document.getElementById('filterCategory');
+
+                categories.forEach(cat => {
+                    const option1 = document.createElement('option');
+                    option1.value = cat.id;
+                    option1.textContent = `${cat.icon || ''} ${cat.name}`;
+                    categorySelect.appendChild(option1);
+
+                    const option2 = document.createElement('option');
+                    option2.value = cat.id;
+                    option2.textContent = `${cat.icon || ''} ${cat.name}`;
+                    filterSelect.appendChild(option2);
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load all prices
+        async function loadPrices() {
+            try {
+                const response = await fetch(`${API_URL}/items/prices/all`);
+                const prices = await response.json();
+                allPrices = prices;
+                displayPrices(prices);
+                updateStats(prices);
+            } catch (error) {
+                console.error('Error loading prices:', error);
+            }
+        }
+
+        // Display prices in table
+        function displayPrices(prices) {
+            const container = document.getElementById('pricesContainer');
+
+            if (prices.length === 0) {
+                container.innerHTML = `<div class="empty-state"><p>No prices match your filters.</p></div>`;
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'prices-table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Item</th>
+                        <th>Brand</th>
+                        <th>Pack</th>
+                        <th>Price (₦)</th>
+                        <th>Per Unit</th>
+                        <th>Retailer</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${prices.map(p => `
+                        <tr>
+                            <td><span class="category-badge">${allCategories.find(c => c.id === p.category_id)?.icon || ''} ${allCategories.find(c => c.id === p.category_id)?.name || 'Unknown'}</span></td>
+                            <td>${p.name}</td>
+                            <td>${p.brand || '-'}</td>
+                            <td>${p.pack_size ? `${p.pack_size}${p.pack_unit ? ' ' + p.pack_unit : ''}` : '-'}</td>
+                            <td class="price-value">₦${p.price.toFixed(2)}</td>
+                            <td>${p.price_per_unit ? `₦${p.price_per_unit.toFixed(2)}` : '-'}</td>
+                            <td>${p.retailer || '-'}</td>
+                            <td>${p.location || '-'}</td>
+                            <td>${new Date(p.submitted_at).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // Update statistics
+        function updateStats(prices) {
+            document.getElementById('totalPrices').textContent = prices.length;
+            const avg = prices.length > 0 ? (prices.reduce((sum, p) => sum + p.price, 0) / prices.length).toFixed(2) : '0';
+            document.getElementById('avgPrice').textContent = `₦${avg}`;
+
+            const locations = new Set(prices.map(p => p.location).filter(l => l));
+            document.getElementById('totalLocations').textContent = locations.size;
+
+            const retailers = new Set(prices.map(p => p.retailer).filter(r => r));
+            document.getElementById('totalRetailers').textContent = retailers.size;
+        }
+
+        // Filter prices
+        function applyFilters() {
+            const categoryId = document.getElementById('filterCategory').value;
+            const minPrice = parseFloat(document.getElementById('filterMinPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('filterMaxPrice').value) || Infinity;
+            const retailer = document.getElementById('filterRetailer').value.toLowerCase();
+            const location = document.getElementById('filterLocation').value.toLowerCase();
+
+            const filtered = allPrices.filter(p => {
+                const matchCategory = !categoryId || p.category_id == categoryId;
+                const matchPrice = p.price >= minPrice && p.price <= maxPrice;
+                const matchRetailer = !retailer || (p.retailer && p.retailer.toLowerCase().includes(retailer));
+                const matchLocation = !location || (p.location && p.location.toLowerCase().includes(location));
+                return matchCategory && matchPrice && matchRetailer && matchLocation;
+            });
+
+            displayPrices(filtered);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterMinPrice').value = '';
+            document.getElementById('filterMaxPrice').value = '';
+            document.getElementById('filterRetailer').value = '';
+            document.getElementById('filterLocation').value = '';
+            displayPrices(allPrices);
+        }
+
+        // Add filter event listeners
+        ['filterCategory', 'filterMinPrice', 'filterMaxPrice', 'filterRetailer', 'filterLocation'].forEach(id => {
+            document.getElementById(id).addEventListener('change', applyFilters);
+            document.getElementById(id).addEventListener('keyup', applyFilters);
+        });
+
+        // Submit price form
+        document.getElementById('priceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const priceData = {
+                category_id: parseInt(document.getElementById('category').value),
+                name: document.getElementById('itemName').value,
+                brand: document.getElementById('brand').value || null,
+                pack_size: document.getElementById('packSize').value || null,
+                pack_unit: document.getElementById('packUnit').value || null,
+                price: parseFloat(document.getElementById('price').value),
+                price_per_unit: parseFloat(document.getElementById('pricePerUnit').value) || null,
+                retailer: document.getElementById('retailer').value || null,
+                location: document.getElementById('location').value || null,
+                store_id: null,
+                submitted_by: null
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/items/prices/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(priceData)
+                });
+
+                if (response.ok) {
+                    const successMsg = document.getElementById('successMsg');
+                    successMsg.classList.add('show');
+                    setTimeout(() => successMsg.classList.remove('show'), 3000);
+
+                    document.getElementById('priceForm').reset();
+                    loadPrices();
+                } else {
+                    alert('Error submitting price. Check your inputs.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting price');
+            }
+        });
+
+        // Initialize
+        loadCategories();
+        loadPrices();
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

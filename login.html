@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNILAG Price Saver - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 90%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Left Side - Branding */
+        .login-branding {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .login-branding h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .login-branding p {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .login-branding-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            text-align: left;
+            width: 100%;
+        }
+
+        .feature-item {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Right Side - Form */
+        .login-form-section {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .form-tab {
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .form-tab.active {
+            color: #0f3460;
+            border-bottom-color: #0f3460;
+        }
+
+        .form-tab:hover {
+            color: #0f3460;
+        }
+
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .password-info {
+            background: #f0f4ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #667eea;
+            border-left: 4px solid #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .demo-credentials {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            border-left: 3px solid #ffc107;
+        }
+
+        .demo-credentials strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .demo-credentials code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .login-branding {
+                padding: 40px 30px;
+            }
+
+            .login-form-section {
+                padding: 40px 30px;
+            }
+
+            .login-branding h1 {
+                font-size: 24px;
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="login-branding">
+            <div class="login-branding-icon">🛍️</div>
+            <h1>UNILAG Price Saver</h1>
+            <p>Smart price comparison and item tracking for UNILAG campus</p>
+            
+            <div class="features">
+                <div class="feature-item">Find lowest prices</div>
+                <div class="feature-item">Real-time updates</div>
+                <div class="feature-item">Location-based search</div>
+                <div class="feature-item">Admin management</div>
+            </div>
+        </div>
+
+        <!-- Right Side - Form -->
+        <div class="login-form-section">
+            <!-- Tabs -->
+            <div class="form-tabs">
+                <button class="form-tab active" onclick="switchLoginMode('user')">👤 User</button>
+                <button class="form-tab" onclick="switchLoginMode('admin')">👨‍💼 Admin</button>
+            </div>
+
+            <!-- User Login -->
+            <div id="userLogin" class="form-content active">
+                <h2 style="margin-bottom: 25px; color: #333;">User Login</h2>
+                <div id="userStatus" class="status-message"></div>
+                
+                <div class="form-group">
+                    <label>Username or Email</label>
+                    <input type="text" id="userUsername" placeholder="Enter any username">
+                </div>
+
+                <button class="login-btn" onclick="loginUser()">
+                    <span id="userLoginText">Enter as User</span>
+                </button>
+            </div>
+
+            <!-- Admin Login -->
+            <div id="adminLogin" class="form-content">
+                <h2 style="margin-bottom: 25px; color: #333;">Admin Login</h2>
+                <div id="adminStatus" class="status-message"></div>
+
+                <div class="password-info">
+                    🔐 Admin requires a special API key as password
+                </div>
+
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter admin username">
+                </div>
+
+                <div class="form-group">
+                    <label>Admin API Key (Password)</label>
+                    <input type="password" id="adminKey" placeholder="Enter your admin API key">
+                </div>
+
+                <button class="login-btn" onclick="loginAdmin()">
+                    <span id="adminLoginText">Login as Admin</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        // Switch between User and Admin login
+        function switchLoginMode(mode) {
+            document.querySelectorAll('.form-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.form-content').forEach(content => content.classList.remove('active'));
+            
+            if (mode === 'user') {
+                document.querySelector('[onclick="switchLoginMode(\'user\')"]').classList.add('active');
+                document.getElementById('userLogin').classList.add('active');
+            } else {
+                document.querySelector('[onclick="switchLoginMode(\'admin\')"]').classList.add('active');
+                document.getElementById('adminLogin').classList.add('active');
+            }
+        }
+
+        // User Login
+        async function loginUser() {
+            const username = document.getElementById('userUsername').value.trim();
+            const statusEl = document.getElementById('userStatus');
+            const btnEl = document.getElementById('userLoginText');
+
+            if (!username) {
+                statusEl.className = 'status-message error';
+                statusEl.textContent = '❌ Please enter a username';
+                return;
+            }
+
+            btnEl.parentElement.disabled = true;
+            btnEl.innerHTML = '<span class="spinner"></span>Logging in...';
+
+            try {
+                const response = await fetch(`${API_URL}/login/user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.className = 'status-message success';
+                    statusEl.textContent = '✅ Login successful! Redirecting...';
+                    
+                    // Store user info
+                    localStorage.setItem('userId', data.user_id);
+                    localStorage.setItem('userName', data.user_name);
+                    localStorage.setItem('userRole', 'user');
+                    localStorage.setItem('loginToken', data.login_token);
+                    
+                    setTimeout(() => {
+                        window.location.href = 'user-dashboard.html';
+                    }, 1000);
+                } else {
+                    statusEl.className = 'status-message error';
+                    statusEl.textContent = '❌ ' + (data.detail || 'Login failed');
+                }
+            } catch (error) {
+                statusEl.className = 'status-message error';
+                statusEl.textContent = '❌ Connection error. Backend running?';
+                console.error('Error:', error);
+            } finally {
+                btnEl.parentElement.disabled = false;
+                btnEl.innerHTML = 'Enter as User';
+            }
+        }
+
+        // Admin Login
+        async function loginAdmin() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const apiKey = document.getElementById('adminKey').value.trim();
+            const statusEl = document.getElementById('adminStatus');
+            const btnEl = document.getElementById('adminLoginText');
+
+            if (!username || !apiKey) {
+                statusEl.className = 'status-message error';
+                statusEl.textContent = '❌ Please enter both username and API key';
+                return;
+            }
+
+            btnEl.parentElement.disabled = true;
+            btnEl.innerHTML = '<span class="spinner"></span>Verifying...';
+
+            try {
+                const response = await fetch(`${API_URL}/login/admin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username,
+                        admin_key: apiKey
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.className = 'status-message success';
+                    statusEl.textContent = '✅ Admin login successful! Redirecting...';
+                    
+                    // Store admin info
+                    localStorage.setItem('adminId', data.admin_id);
+                    localStorage.setItem('adminName', data.admin_name);
+                    localStorage.setItem('userRole', 'admin');
+                    localStorage.setItem('adminKey', apiKey);
+                    localStorage.setItem('loginToken', data.login_token);
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1000);
+                } else {
+                    statusEl.className = 'status-message error';
+                    statusEl.textContent = '❌ ' + (data.detail || 'Invalid credentials');
+                }
+            } catch (error) {
+                statusEl.className = 'status-message error';
+                statusEl.textContent = '❌ Connection error. Backend running?';
+                console.error('Error:', error);
+            } finally {
+                btnEl.parentElement.disabled = false;
+                btnEl.innerHTML = 'Login as Admin';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const activeTab = document.querySelector('.form-content.active');
+                if (activeTab.id === 'userLogin') {
+                    loginUser();
+                } else {
+                    loginAdmin();
+                }
+            }
+        });
+
+        // Check if already logged in
+        window.addEventListener('load', function() {
+            const role = localStorage.getItem('userRole');
+            const token = localStorage.getItem('loginToken');
+            if (role && token) {
+                if (role === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'user-dashboard.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

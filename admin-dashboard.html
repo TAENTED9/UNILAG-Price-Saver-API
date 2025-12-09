@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - UNILAG Price Saver</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1234567890&libraries=places" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --danger: #FF3B30;
+            --success: #34C759;
+            --warning: #FF9500;
+            --light: #F2F2F7;
+            --text: #000;
+            --bg: #fff;
+            --border: #E5E5EA;
+        }
+
+        body.dark-mode {
+            --text: #fff;
+            --bg: #1C1C1E;
+            --border: #38383A;
+            --light: #2C2C2E;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+
+        .dark-mode-toggle {
+            position: relative;
+            top: auto;
+            right: auto;
+            z-index: 101;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
+        }
+
+        .dark-mode-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Navigation Panel */
+        .nav-toggle {
+            position: relative;
+            top: auto;
+            left: auto;
+            z-index: 101;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
+        }
+
+        .nav-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .nav-panel {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--light);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .nav-panel.open {
+            left: 0;
+        }
+
+        .nav-panel h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 998;
+        }
+
+        .nav-overlay.open {
+            display: block;
+        }
+
+        /* Main content */
+        .container {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .content-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .prices-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .prices-table th {
+            background: var(--border);
+            padding: 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+
+        .prices-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prices-table tbody tr:hover {
+            background: var(--border);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .price-value {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: var(--warning);
+            color: white;
+        }
+
+        .status-approved {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-rejected {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            opacity: 0.8;
+        }
+
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            opacity: 0.8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .prices-table {
+                font-size: 0.8rem;
+            }
+
+            .prices-table th, .prices-table td {
+                padding: 0.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="nav-toggle" id="navToggleBtn" title="Navigation">☰</button>
+        <div class="logo">👨‍💼 Admin Dashboard</div>
+        <button class="dark-mode-toggle" id="darkModeBtn" title="Toggle dark mode">🌙</button>
+    </header>
+
+    <div class="nav-overlay" id="navOverlay"></div>
+    <div class="nav-panel" id="navPanel">
+        <h3>📱 Navigation</h3>
+        <a href="admin-dashboard.html" class="nav-item">👨‍💼 Admin</a>
+        <a href="#" onclick="logout()" class="nav-item">🚪 Logout</a>
+    </div>
+
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">📊 Overview</button>
+            <button class="tab-btn" onclick="showTab('pending')">⏳ Pending Review</button>
+            <button class="tab-btn" onclick="showTab('approved')">✅ Approved</button>
+            <button class="tab-btn" onclick="showTab('categories')">🏷️ Categories</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h2 style="margin-bottom: 1.5rem;">📊 System Overview</h2>
+            
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h4>Total Prices</h4>
+                    <div class="number" id="totalPrices">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Pending Review</h4>
+                    <div class="number" id="pendingCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Approved</h4>
+                    <div class="number" id="approvedCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Rejected</h4>
+                    <div class="number" id="rejectedCount">0</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Recent Activity</h3>
+                <div id="recentActivityTable"></div>
+            </div>
+        </div>
+
+        <!-- Pending Tab -->
+        <div id="pending" class="tab-content">
+            <h2 style="margin-bottom: 1.5rem;">⏳ Pending Price Reviews</h2>
+            
+            <div class="content-section">
+                <div id="pendingTable"></div>
+            </div>
+        </div>
+
+        <!-- Approved Tab -->
+        <div id="approved" class="tab-content">
+            <h2 style="margin-bottom: 1.5rem;">✅ Approved Prices</h2>
+            
+            <div class="content-section">
+                <div id="approvedTable"></div>
+            </div>
+        </div>
+
+        <!-- Categories Tab -->
+        <div id="categories" class="tab-content">
+            <h2 style="margin-bottom: 1.5rem;">🏷️ Categories</h2>
+            
+            <div class="content-section">
+                <h3>Categories</h3>
+                <div id="categoriesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+        let allPrices = [];
+        let allCategories = [];
+
+        // Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const navPanel = document.getElementById('navPanel');
+        const navOverlay = document.getElementById('navOverlay');
+
+        navToggleBtn.addEventListener('click', () => {
+            navPanel.classList.toggle('open');
+            navOverlay.classList.toggle('open');
+        });
+
+        navOverlay.addEventListener('click', () => {
+            navPanel.classList.remove('open');
+            navOverlay.classList.remove('open');
+        });
+
+        // Dark Mode Toggle
+        const darkModeBtn = document.getElementById('darkModeBtn');
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            darkModeBtn.textContent = isDark ? '☀️' : '🌙';
+        });
+
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            darkModeBtn.textContent = '☀️';
+        }
+
+        // Tab Management
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'pending') loadPendingTable();
+            if (tabId === 'approved') loadApprovedTable();
+            if (tabId === 'categories') loadCategoriesTab();
+        }
+
+        // Load Categories
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/items/categories/all`);
+                const categories = await response.json();
+                allCategories = categories;
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load All Prices
+        async function loadAllPrices() {
+            try {
+                const response = await fetch(`${API_URL}/items/prices/all`);
+                const prices = await response.json();
+                allPrices = prices;
+                updateOverview();
+                loadRecentActivity();
+            } catch (error) {
+                console.error('Error loading prices:', error);
+            }
+        }
+
+        // Load Pending Prices
+        async function loadPendingTable() {
+            try {
+                const response = await fetch(`${API_URL}/items/prices/pending/`);
+                const pending = await response.json();
+                const container = document.getElementById('pendingTable');
+
+                if (pending.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>No pending prices</p></div>';
+                    return;
+                }
+
+                const table = createPricesTable(pending, true);
+                container.innerHTML = '';
+                container.appendChild(table);
+            } catch (error) {
+                console.error('Error loading pending:', error);
+            }
+        }
+
+        // Load Approved Prices
+        async function loadApprovedTable() {
+            try {
+                const response = await fetch(`${API_URL}/items/prices/all`);
+                const approved = (await response.json()).filter(p => p.status === 'approved');
+                const container = document.getElementById('approvedTable');
+
+                if (approved.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>No approved prices</p></div>';
+                    return;
+                }
+
+                const table = createPricesTable(approved, false);
+                container.innerHTML = '';
+                container.appendChild(table);
+            } catch (error) {
+                console.error('Error loading approved:', error);
+            }
+        }
+
+        // Load Categories Tab
+        async function loadCategoriesTab() {
+            const container = document.getElementById('categoriesList');
+            
+            if (allCategories.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No categories</p></div>';
+                return;
+            }
+
+            const html = `
+                <table class="prices-table">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allCategories.map(cat => `
+                            <tr>
+                                <td>${cat.icon || '-'}</td>
+                                <td><strong>${cat.name}</strong></td>
+                                <td>${cat.description || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = html;
+        }
+
+        // Create Prices Table
+        function createPricesTable(prices, showActions = false) {
+            const table = document.createElement('table');
+            table.className = 'prices-table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Item</th>
+                        <th>Brand</th>
+                        <th>Pack</th>
+                        <th>Price</th>
+                        <th>Retailer</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        ${showActions ? '<th>Action</th>' : ''}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${prices.map(p => `
+                        <tr>
+                            <td><span class="category-badge">${allCategories.find(c => c.id === p.category_id)?.icon || ''} ${allCategories.find(c => c.id === p.category_id)?.name || 'Unknown'}</span></td>
+                            <td>${p.name}</td>
+                            <td>${p.brand || '-'}</td>
+                            <td>${p.pack_size ? `${p.pack_size}${p.pack_unit ? ' ' + p.pack_unit : ''}` : '-'}</td>
+                            <td class="price-value">₦${p.price.toFixed(2)}</td>
+                            <td>${p.retailer || '-'}</td>
+                            <td>${p.location || '-'}</td>
+                            <td><span class="status-badge status-${p.status}">${p.status}</span></td>
+                            ${showActions ? `
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-small btn-approve" onclick="approvePrice(${p.id})">Approve</button>
+                                        <button class="btn-small btn-reject" onclick="rejectPrice(${p.id})">Reject</button>
+                                    </div>
+                                </td>
+                            ` : ''}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            return table;
+        }
+
+        // Approve Price
+        async function approvePrice(priceId) {
+            try {
+                const response = await fetch(`${API_URL}/items/prices/${priceId}/approve`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    loadAllPrices();
+                    loadPendingTable();
+                    alert('✅ Price approved!');
+                } else {
+                    alert('Error approving price');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Reject Price
+        async function rejectPrice(priceId) {
+            try {
+                const response = await fetch(`${API_URL}/items/prices/${priceId}/reject`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    loadAllPrices();
+                    loadPendingTable();
+                    alert('❌ Price rejected!');
+                } else {
+                    alert('Error rejecting price');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Update Overview
+        function updateOverview() {
+            const pending = allPrices.filter(p => p.status === 'pending').length;
+            const approved = allPrices.filter(p => p.status === 'approved').length;
+            const rejected = allPrices.filter(p => p.status === 'rejected').length;
+
+            document.getElementById('totalPrices').textContent = allPrices.length;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+        }
+
+        // Load Recent Activity
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivityTable');
+            
+            if (allPrices.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No activity yet</p></div>';
+                return;
+            }
+
+            const recent = allPrices.slice(0, 10);
+            const table = createPricesTable(recent, false);
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // Initialize
+        loadCategories();
+        loadAllPrices();
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
