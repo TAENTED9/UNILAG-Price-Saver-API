@@ -1,24 +1,23 @@
-# Vercel ignore file
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
+
+# Python envs
 env/
 venv/
 .venv/
-*.db
-*.sqlite
-*.sqlite3
+
+# Rust stuff
 target/
-rust_engine/target/
-*.lock
+
+# OS and editor junk
 .DS_Store
 .vscode/
 .idea/
+
+# Logs
 *.log
+
 *.md
 !README.md
-data.db
-uploads/
-
