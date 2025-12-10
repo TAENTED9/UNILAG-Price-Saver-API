@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UNILAG Price Saver - Login</title>
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <div class="login-container">
+    <!-- Left Side - Branding -->
+    <div class="login-branding">
+      <div class="login-branding-icon">🛍️</div>
+      <h1>UNILAG Price Saver</h1>
+      <p>Smart price comparison and item tracking for UNILAG campus</p>
+
+      <div class="features">
+        <div class="feature-item">Find lowest prices</div>
+        <div class="feature-item">Real-time updates</div>
+        <div class="feature-item">Location-based search</div>
+        <div class="feature-item">Admin management</div>
+      </div>
+    </div>
+
+    <!-- Right Side - Form -->
+    <div class="login-form-section">
+      <!-- Tabs -->
+      <div class="form-tabs" role="tablist">
+        <button class="form-tab active" data-mode="user" type="button">👤 User</button>
+        <button class="form-tab" data-mode="admin" type="button">👨‍💼 Admin</button>
+      </div>
+
+      <!-- User Login -->
+      <div id="userLogin" class="form-content active" data-content="user">
+        <h2 class="section-title">User Login</h2>
+        <div id="userStatus" class="status-message" aria-live="polite"></div>
+
+        <div class="form-group">
+          <label for="userUsername">Username</label>
+          <input type="text" id="userUsername" placeholder="Enter your username" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="userPassword">Password</label>
+          <input type="password" id="userPassword" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+
+        <button id="userLoginBtn" class="login-btn" type="button">
+          <span id="userLoginText">Login</span>
+        </button>
+
+        <div class="center-note">
+          <p class="small-note">Don't have an account?</p>
+          <button id="toRegisterBtn" class="login-btn alt" type="button">Create Account</button>
+        </div>
+      </div>
+
+      <!-- User Registration -->
+      <div id="userRegister" class="form-content" data-content="register">
+        <h2 class="section-title">Create Account</h2>
+        <div id="registerStatus" class="status-message" aria-live="polite"></div>
+
+        <div class="form-group">
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" placeholder="Choose a username" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" placeholder="Create a password" autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label for="regPasswordConfirm">Confirm Password</label>
+          <input type="password" id="regPasswordConfirm" placeholder="Confirm password" autocomplete="new-password">
+        </div>
+
+        <button id="registerBtn" class="login-btn" type="button">
+          <span id="registerText">Create Account</span>
+        </button>
+
+        <div class="center-note">
+          <p class="small-note">Already have an account?</p>
+          <button id="toLoginBtn" class="login-btn alt neutral" type="button">Back to Login</button>
+        </div>
+      </div>
+
+      <!-- Admin Login -->
+      <div id="adminLogin" class="form-content" data-content="admin">
+        <h2 class="section-title">Admin Login</h2>
+        <div id="adminStatus" class="status-message" aria-live="polite"></div>
+
+        <div class="password-info">
+          🔐 Admin requires a special API key as password
+        </div>
+
+        <div class="form-group">
+          <label for="adminUsername">Admin Username</label>
+          <input type="text" id="adminUsername" placeholder="Enter admin username" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="adminKey">Admin API Key (Password)</label>
+          <input type="password" id="adminKey" placeholder="Enter your admin API key" autocomplete="current-password">
+        </div>
+
+        <button id="adminLoginBtn" class="login-btn" type="button">
+          <span id="adminLoginText">Login as Admin</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main module that imports others -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

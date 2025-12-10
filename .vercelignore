@@ -1,0 +1,24 @@
+# Vercel ignore file
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.db
+*.sqlite
+*.sqlite3
+target/
+rust_engine/target/
+*.lock
+.DS_Store
+.vscode/
+.idea/
+*.log
+*.md
+!README.md
+data.db
+uploads/
+

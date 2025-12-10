@@ -10,8 +10,16 @@ from typing import Optional
 
 router = APIRouter(prefix="/prices", tags=["Prices"])
 
-UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./uploads")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+"""
+Serverless note: Vercel's Python runtime has a read-only filesystem except /tmp.
+Default upload dir therefore points to /tmp to avoid import-time crashes.
+"""
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/tmp/uploads")
+try:
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+except OSError:
+    # If even /tmp is not writable, fall back to /tmp directly
+    UPLOAD_DIR = "/tmp"
 
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "change-me")
 

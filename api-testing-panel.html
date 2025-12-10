@@ -348,8 +348,17 @@
     </div>
     
     <script>
-        // API Configuration
-        const API_URL = 'http://172.16.142.74:8000';
+        // API Configuration - Auto-detect API URL
+        const API_URL = (function() {
+            const hostname = window.location.hostname;
+            if (hostname.includes('vercel.app')) {
+                return window.location.origin;
+            } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'http://localhost:8000';
+            } else {
+                return `http://${hostname}:8000`;
+            }
+        })();
         let currentUserId = localStorage.getItem('userId') || 1;
         
         // Simple response display
