@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from app.routers import items, prices, payments, ml, pending, stores, admin_items, auth, google_maps
 from app.database import init_db, SessionLocal
 from app.models import Category
@@ -78,5 +77,11 @@ app.include_router(google_maps.router, prefix="/api")
 # ------------------------------
 # Serve frontend static files
 # ------------------------------
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend/
+FRONTEND_DIR = BASE_DIR / "frontend"
+
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
 
