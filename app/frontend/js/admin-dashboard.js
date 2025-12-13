@@ -239,7 +239,13 @@ function renderRecentActivity() {
 }
 
 function logout() {
-  localStorage.clear();
-  window.location.href = appPath('login.html');
+  if (confirm('Are you sure you want to logout?')) {
+    // Clear all storage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Redirect to login page
+    window.location.href = appPath('login.html');
+  }
 }
 
