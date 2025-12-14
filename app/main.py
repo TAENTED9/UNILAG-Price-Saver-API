@@ -4,6 +4,7 @@ from app.routers import items, prices, payments, ml, pending, stores, admin_item
 from app.database import init_db, SessionLocal
 from app.models import Category
 from contextlib import asynccontextmanager
+import os
 
 # ------------------------------
 # Lifespan: DB init + seed
@@ -54,11 +55,13 @@ app = FastAPI(title="UNILAG Price Saver API", version="1.0.0", lifespan=lifespan
 # ------------------------------
 # CORS
 # ------------------------------
+ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,  # Change from ["*"]
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["*"],
 )
 
