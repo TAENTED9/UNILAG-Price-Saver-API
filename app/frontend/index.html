@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNILAG Price Saver - Smart Shopping Made Easy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --light: #F2F2F7;
+            --dark: #1C1C1E;
+            --text: #000;
+            --bg: #fff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--light);
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 2rem;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            background: linear-gradient(to bottom, white 0%, var(--light) 100%);
+            padding: 4rem 2rem;
+        }
+
+        .demo-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .demo-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .demo-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        /* Interactive Demo */
+        .demo-basket {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-input {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .demo-input h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .demo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-results {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .demo-store-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--success);
+        }
+
+        .demo-store-card.maybe {
+            border-left-color: var(--warning);
+        }
+
+        .demo-store-card.not-worth {
+            border-left-color: #ddd;
+        }
+
+        .demo-verdict {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .demo-verdict.worth {
+            background: var(--success);
+            color: white;
+        }
+
+        .demo-verdict.maybe {
+            background: var(--warning);
+            color: white;
+        }
+
+        .demo-verdict.not {
+            background: #ddd;
+            color: #666;
+        }
+
+        .demo-saving {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--success);
+            margin: 0.5rem 0;
+        }
+
+        .demo-blur {
+            position: relative;
+        }
+
+        .demo-blur::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.95) 60%);
+            backdrop-filter: blur(4px);
+            border-radius: 12px;
+        }
+
+        .demo-cta-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+        }
+
+        .demo-cta-overlay h3 {
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .demo-cta-overlay p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 2rem;
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, #0051D5 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .step h3 {
+            margin-bottom: 0.8rem;
+            color: var(--dark);
+        }
+
+        .step p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: var(--light);
+            padding: 4rem 2rem;
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .testimonial-stars {
+            color: #FFD700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .testimonial-role {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .final-cta p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        /* Sign-up Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal h2 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #0051D5;
+            transform: translateY(-2px);
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        .modal-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .demo-basket {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features-grid,
+            .steps,
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🛒 Smart Shopping Made Simple</h1>
+            <p class="subtitle">Compare prices across UNILAG stores and find the best value — not just the cheapest price</p>
+            <div class="hero-cta">
+                <button class="btn-hero btn-primary" onclick="openSignupModal()">Get Started Free</button>
+                <a href="#demo" class="btn-hero btn-secondary">See How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stat-card">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Campus Stores</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">1000+</div>
+            <div class="stat-label">Price Updates</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">₦500+</div>
+            <div class="stat-label">Avg. Savings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Happy Students</div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Why Students Love Us</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Smart Comparison</h3>
+                <p>We don't just show you the cheapest price — we calculate if it's worth switching stores after factoring in transport costs and your time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3>Location-Aware</h3>
+                <p>Get recommendations based on stores near you. See exactly how far you'll need to travel and get directions instantly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-Time Updates</h3>
+                <p>Prices are crowdsourced by students like you. Get the latest prices updated daily across all campus stores.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <h3>Price Alerts</h3>
+                <p>Set alerts for your favorite items. Get notified when prices drop or when switching stores becomes worth it.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛍️</div>
+                <h3>Basket Shopping</h3>
+                <p>Shopping for multiple items? Build your basket and we'll find the best overall value across all stores.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>Community-Driven</h3>
+                <p>Powered by students, for students. Contribute prices and help the UNILAG community save money together.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="demo-content">
+            <h2>See It In Action</h2>
+            <p class="demo-subtitle">Here's how we help you make smarter shopping decisions</p>
+            
+            <div class="demo-container">
+                <div class="demo-basket">
+                    <div class="demo-input">
+                        <h3>📝 Your Basket</h3>
+                        <div class="demo-item">
+                            <span><strong>Rice</strong> (2kg)</span>
+                            <span>₦3,500</span>
+                        </div>
+                        <div class="demo-item">
+                            <span><strong>Beans</strong> (1kg)</span>
+                            <span>₦1,800</span>
+                        </div>
+                        <div class="demo-item">
+                            <span><strong>Peak Milk</strong> (380g)</span>
+                            <span>₦1,200</span>
+                        </div>
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--light);">
+                            <strong>Total: ₦6,500</strong>
+                        </div>
+                    </div>
+
+                    <div class="demo-results demo-blur">
+                        <h3>🏪 Best Options</h3>
+                        
+                        <div class="demo-store-card">
+                            <span class="demo-verdict worth">✅ Worth Switching!</span>
+                            <h4>Shoprite Express</h4>
+                            <p style="color: #666; margin: 0.5rem 0;">📍 1.2 km away • 🕐 12 min</p>
+                            <div class="demo-saving">Save ₦450</div>
+                            <p style="color: #666; font-size: 0.9rem;">Net saving after ₦100 transport cost</p>
+                        </div>
+
+                        <div class="demo-store-card maybe">
+                            <span class="demo-verdict maybe">⚠️ Maybe</span>
+                            <h4>Campus Mini-Mart</h4>
+                            <p style="color: #666; margin: 0.5rem 0;">📍 0.8 km away • 🕐 8 min</p>
+                            <div class="demo-saving" style="color: var(--warning);">Save ₦150</div>
+                        </div>
+
+                        <div class="demo-cta-overlay">
+                            <h3>🎯 Want to see your results?</h3>
+                            <p>Create a free account to access smart shopping recommendations</p>
+                            <button class="btn-hero btn-primary" onclick="openSignupModal()">Sign Up - It's Free</button>
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 600;">Log in</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Add Your Items</h3>
+                <p>Build your shopping basket with items you want to buy. Add quantities and brands.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>We Calculate</h3>
+                <p>Our smart algorithm compares prices across stores and factors in travel costs and time.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Get Recommendations</h3>
+                <p>See honest recommendations with clear verdicts: Worth it, Maybe, or Not worth switching.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Save Money!</h3>
+                <p>Follow our recommendations and save hundreds of naira on every shopping trip.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <h2>What Students Say</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"This app saved me over ₦2,000 last month! The smart comparison feature is brilliant — it actually tells me when NOT to travel to another store."</p>
+                <div class="testimonial-author">Chioma A.</div>
+                <div class="testimonial-role">400 Level, Engineering</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Finally, someone made an app that understands we don't just want cheap prices — we want value for our time and effort. Love it!"</p>
+                <div class="testimonial-author">Tunde O.</div>
+                <div class="testimonial-role">300 Level, Medicine</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"The price alerts are amazing. I get notified when my favorite items drop in price nearby. No more walking around to check prices!"</p>
+                <div class="testimonial-author">Fatima B.</div>
+                <div class="testimonial-role">200 Level, Law</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <h2>Ready to Save Smarter?</h2>
+        <p>Join hundreds of UNILAG students who are already saving money every week</p>
+        <button class="btn-hero btn-primary" onclick="openSignupModal()">Create Free Account</button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#demo">Demo</a>
+            <a href="login.html">Login</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <p>&copy; 2025 UNILAG Price Saver. Made with ❤️ for UNILAG Students</p>
+    </footer>
+
+    <!-- Sign-up Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignupModal()">×</button>
+            <h2>🎉 Create Your Account</h2>
+            <p style="color: #666; margin-bottom: 1.5rem;">Start saving money with smart shopping recommendations</p>
+            
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="signupUsername" required placeholder="Choose a username">
+                </div>
+                <div class="form-group">
+                    <label>Email (Optional)</label>
+                    <input type="email" id="signupEmail" placeholder="your.email@unilag.edu.ng">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" required placeholder="Create a password" minlength="4">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="signupPasswordConfirm" required placeholder="Confirm password">
+                </div>
+                <button type="submit" class="btn-submit">Create Account</button>
+            </form>
+
+            <div class="modal-footer">
+                Already have an account? <a href="login.html">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+
+        function openSignupModal() {
+            document.getElementById('signupModal').classList.add('open');
+        }
+
+        function closeSignupModal() {
+            document.getElementById('signupModal').classList.remove('open');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('signupModal').addEventListener('click', (e) => {
+            if (e.target.id === 'signupModal') {
+                closeSignupModal();
+            }
+        });
+
+        async function handleSignup(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+
+            // Validation
+            if (password !== confirmPassword) {
+                alert('❌ Passwords do not match');
+                return;
+            }
+
+            if (password.length < 4) {
+                alert('❌ Password must be at least 4 characters');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, email })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Registration failed');
+                }
+
+                const data = await response.json();
+
+                // Save session
+                localStorage.setItem('userId', data.user_id);
+                localStorage.setItem('userName', data.user_name);
+                localStorage.setItem('userRole', data.user_role);
+                localStorage.setItem('loginToken', data.login_token);
+
+                // Redirect to dashboard
+                alert('✅ Account created successfully! Welcome to UNILAG Price Saver!');
+                window.

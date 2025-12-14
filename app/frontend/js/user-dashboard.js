@@ -158,6 +158,10 @@ function handleNavAction(action) {
       populateAlertsModal();
       openModal('alertModal');
       break;
+
+    case 'basket-compare':
+      window.location.href = 'basket-compare.html';
+      break;  
       
     case 'profile':
       populateProfileModal();

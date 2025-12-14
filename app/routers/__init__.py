@@ -10,4 +10,5 @@ __all__ = [
     "admin_items",
     "auth",
     "google_maps",
+    "compare",
 ]

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import items, prices, payments, ml, pending, stores, admin_items, auth, google_maps
+from app.routers import items, prices, payments, ml, pending, stores, admin_items, auth, google_maps, compare
 from app.database import init_db, SessionLocal
 from app.models import Category
 from contextlib import asynccontextmanager
@@ -76,6 +76,7 @@ app.include_router(admin_items.router, prefix="/api")
 app.include_router(admin_items.router_user, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(google_maps.router, prefix="/api")
+app.include_router(compare.router, prefix="/api")
 
 # ------------------------------
 # Serve Frontend (STATIC + HTML)
@@ -104,7 +105,7 @@ if FRONTEND_DIR.exists():
     # 2) Serve login.html as home page
     @app.get("/", include_in_schema=False)
     async def serve_root():
-        login_path = FRONTEND_DIR / "login.html"
+        login_path = FRONTEND_DIR / "index.html"
         if login_path.exists():
             return FileResponse(login_path)
         return {"message": "Frontend files not found"}
