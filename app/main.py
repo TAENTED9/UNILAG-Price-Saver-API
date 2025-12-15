@@ -105,13 +105,21 @@ if not FRONTEND_DIR.exists():
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
     
-    # 2) Serve login.html as home page
+    # 2) Serve index.html as home page
     @app.get("/", include_in_schema=False)
     async def serve_root():
-        login_path = FRONTEND_DIR / "index.html"
+        index_path = FRONTEND_DIR / "index.html"
+        if index_path.exists():
+            return FileResponse(index_path)
+        return {"message": "Frontend files not found"}
+
+    # Serve login page
+    @app.get("/login.html", include_in_schema=False)
+    async def serve_login():
+        login_path = FRONTEND_DIR / "login.html"
         if login_path.exists():
             return FileResponse(login_path)
-        return {"message": "Frontend files not found"}
+        return {"error": "File not found"}
     
     # Serve other HTML files
     @app.get("/user-dashboard.html", include_in_schema=False)
@@ -124,6 +132,13 @@ if FRONTEND_DIR.exists():
     @app.get("/admin-dashboard.html", include_in_schema=False)
     async def serve_admin_dashboard():
         dashboard_path = FRONTEND_DIR / "admin-dashboard.html"
+        if dashboard_path.exists():
+            return FileResponse(dashboard_path)
+        return {"error": "File not found"}
+
+    @app.get("/basket-compare.html", include_in_schema=False)
+    async def serve_basket_compare():
+        dashboard_path = FRONTEND_DIR / "basket-compare.html"
         if dashboard_path.exists():
             return FileResponse(dashboard_path)
         return {"error": "File not found"}

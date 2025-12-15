@@ -162,7 +162,7 @@ function handleNavAction(action) {
     case 'basket-compare':
       window.location.href = 'basket-compare.html';
       break;  
-      
+     
     case 'profile':
       populateProfileModal();
       openModal('profileModal');
